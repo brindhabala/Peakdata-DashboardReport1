@@ -1,0 +1,134 @@
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <style type="text/css">
+        body
+        {
+            font-family: Arial;
+            font-size: 10pt;
+        }
+        table
+        {
+            border: 1px solid #ccc;
+        }
+        table th
+        {
+            background-color: #F7F7F7;
+            color: #333;
+            font-weight: bold;
+        }
+        table th, table td
+        {
+            padding: 5px;
+            border-color: #ccc;
+        }
+    </style>
+
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function () {
+
+    $.ajax({
+        type: "GET",
+        url: "ARInvoices.csv",
+        dataType: "text",
+        success: function (data) { processData(data); }
+    });
+
+    function processData(allText) {
+        var allLinesArray = allText.split('\n');
+        if (allLinesArray.length > 0) {
+            var dataPoints = [];
+            for (var i = 0; i <= allLinesArray.length - 1; i++) {
+	        var rowData = allLinesArray[i].split(',');
+	        if(rowData && rowData.length > 1)
+	            dataPoints.push({ label: rowData[1], y: parseInt(rowData[7]) });
+            }
+            chart.options.data[0].dataPoints = dataPoints;
+            chart.render();
+        }
+    }
+
+            
+    var chart = new CanvasJS.Chart("chartContainer", {
+        theme: "theme2",
+        title: {
+            text: "Peak-Data Report"
+        },
+        data: [
+        {
+            type: "column",
+            dataPoints: []
+        }
+        ]
+    });
+            
+});
+</script>
+<script type="text/javascript" src="canvasjs.min.js"></script>
+
+
+</head>
+<body>
+<script type="text/javascript">
+function Upload() {
+    var fileUpload = document.getElementById("fileUpload");
+    var regex = /^([a-zA-Z0-9\s_\\.\-:])+(.csv|.txt)$/;
+    if (regex.test(fileUpload.value.toLowerCase())) {
+        if (typeof (FileReader) != "undefined") {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var table = document.createElement("table");
+                var rows = e.target.result.split("\n");
+				 table.style.width = '100%';
+					table.setAttribute('border', '1');
+				
+				
+                for (var i = 0; i < rows.length; i++) {
+                    var row = table.insertRow(-1);
+                    var cells = rows[i].split(",");
+                    for (var j = 0; j < cells.length; j++) {
+				
+				
+				
+				
+				
+				
+				
+				
+                        var cell = row.insertCell(-1);
+                        cell.innerHTML = cells[j];
+                    }
+                }
+                var dvCSV = document.getElementById("dvCSV");
+                dvCSV.innerHTML = "";
+                dvCSV.appendChild(table);
+            }
+            reader.readAsText(fileUpload.files[0]);
+        } else {
+            alert("This browser does not support HTML5.");
+        }
+    } else {
+        alert("Please upload a valid CSV file.");
+    }
+}
+</script>
+
+
+
+
+
+<input type="file" id="fileUpload" />
+<input type="button" id="upload" value="Display" onclick = "Upload()" />
+<hr />
+<div id="dvCSV">
+</div>
+
+
+<div id="chartContainer" style="height: 300px; width: 100%;"></div>
+</body>
+</html>
+
